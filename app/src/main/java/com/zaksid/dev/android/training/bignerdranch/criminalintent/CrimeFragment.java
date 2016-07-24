@@ -4,14 +4,23 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 
 public class CrimeFragment extends Fragment {
+    
+    private final CharSequence DATE_FORMAT = "EEEE, LLL d, yyyy h:mm a"; // i.e. Saturday, Jul 23, 2016 5.12 AM
+
     private Crime crime;
     private EditText titleField;
+    private Button dateButton;
+    private CheckBox isSolvedCheckbox;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,6 +46,18 @@ public class CrimeFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
+            }
+        });
+
+        dateButton = (Button) view.findViewById(R.id.crime_date);
+        dateButton.setText(DateFormat.format(DATE_FORMAT, crime.getDate()));
+        dateButton.setEnabled(false);
+
+        isSolvedCheckbox = (CheckBox) view.findViewById(R.id.crime_solved);
+        isSolvedCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                crime.setSolved(isChecked);
             }
         });
 
