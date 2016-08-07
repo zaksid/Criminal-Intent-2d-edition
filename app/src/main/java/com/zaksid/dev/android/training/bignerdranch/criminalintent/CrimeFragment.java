@@ -13,9 +13,13 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
+
+/**
+ * Class that holds view of a single crime
+ */
 public class CrimeFragment extends Fragment {
-    
-    private final CharSequence DATE_FORMAT = "EEEE, LLL d, yyyy h:mm a"; // i.e. Saturday, Jul 23, 2016 5.12 AM
+
+    public final static CharSequence DATE_FORMAT = "EEEE, LLL d, yyyy h:mm a"; // i.e. Saturday, Jul 23, 2016 5.12 AM
 
     private Crime crime;
     private EditText titleField;
