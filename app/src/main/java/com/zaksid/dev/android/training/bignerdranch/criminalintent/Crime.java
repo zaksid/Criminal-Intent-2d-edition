@@ -3,6 +3,17 @@ package com.zaksid.dev.android.training.bignerdranch.criminalintent;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Model of Crime.
+ * Contains following fields:
+ * <ul>
+ *     <li>id - unique crime's identifier</li>
+ *     <li>title - name of crime</li>
+ *     <li>date - when crime happened</li>
+ *     <li>isSolved - is crime solved or not</li>
+ * </ul>
+ *
+ */
 public class Crime {
     private UUID id;
     private String title;
