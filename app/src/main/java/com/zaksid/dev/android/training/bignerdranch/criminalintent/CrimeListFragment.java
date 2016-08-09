@@ -36,9 +36,9 @@ public class CrimeListFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        updateUI();
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        adapter.notifyItemChanged(requestCode);
     }
 
     private void updateUI() {
@@ -79,7 +79,7 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(View view) {
             Intent intent = CrimeActivity.newIntent(getActivity(), crime.getId());
-            startActivity(intent);
+            startActivityForResult(intent, getAdapterPosition());
         }
     }
 
