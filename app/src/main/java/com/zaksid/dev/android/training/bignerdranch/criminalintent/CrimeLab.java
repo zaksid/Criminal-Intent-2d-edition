@@ -41,7 +41,7 @@ public class CrimeLab {
 
     public Crime getCrime(UUID id) {
         for (Crime crime : crimes) {
-            if (crime.getId() == id) {
+            if (crime.getId().equals(id)) {
                 return crime;
             }
         }

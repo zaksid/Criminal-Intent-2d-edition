@@ -13,6 +13,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import java.util.UUID;
+
 
 /**
  * Class that holds view of a single crime
@@ -21,15 +23,28 @@ public class CrimeFragment extends Fragment {
 
     public final static CharSequence DATE_FORMAT = "EEEE, LLL d, yyyy h:mm a"; // i.e. Saturday, Jul 23, 2016 5.12 AM
 
+    private final static String ARG_CRIME_ID = "crime_id";
+
     private Crime crime;
     private EditText titleField;
     private Button dateButton;
     private CheckBox isSolvedCheckbox;
 
+    public static CrimeFragment newInstance(UUID crimeId) {
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_CRIME_ID, crimeId);
+
+        CrimeFragment fragment = new CrimeFragment();
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        crime = new Crime();
+        UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
+        crime = CrimeLab.get(getActivity()).getCrime(crimeId);
     }
 
     @Override
@@ -38,6 +53,7 @@ public class CrimeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_crime, container, false);
 
         titleField = (EditText) view.findViewById(R.id.crime_title);
+        titleField.setText(crime.getTitle());
         titleField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
@@ -58,6 +74,7 @@ public class CrimeFragment extends Fragment {
         dateButton.setEnabled(false);
 
         isSolvedCheckbox = (CheckBox) view.findViewById(R.id.crime_solved);
+        isSolvedCheckbox.setChecked(crime.isSolved());
         isSolvedCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
