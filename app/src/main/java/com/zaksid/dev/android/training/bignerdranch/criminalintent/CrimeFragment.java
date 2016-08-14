@@ -81,7 +81,7 @@ public class CrimeFragment extends Fragment {
         });
 
         dateButton = (Button) view.findViewById(R.id.crime_date);
-        updateDateOnButton();
+        updateDateOnButton(dateButton, DATE_FORMAT);
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,7 +93,7 @@ public class CrimeFragment extends Fragment {
         });
 
         timeButton = (Button) view.findViewById(R.id.crime_time);
-        updateTimeOnButton();
+        updateDateOnButton(timeButton, TIME_FORMAT);
         timeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -126,21 +126,17 @@ public class CrimeFragment extends Fragment {
         if (requestCode == REQUEST_DATE) {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             crime.setDate(date);
-            updateDateOnButton();
+            updateDateOnButton(dateButton, DATE_FORMAT);
         }
 
         if (requestCode == REQUEST_TIME) {
             Date date = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
             crime.setDate(date);
-            updateTimeOnButton();
+            updateDateOnButton(timeButton, TIME_FORMAT);
         }
     }
 
-    private void updateDateOnButton() {
-        dateButton.setText(DateFormat.format(DATE_FORMAT, crime.getDate()));
-    }
-
-    private void updateTimeOnButton() {
-        timeButton.setText(DateFormat.format(TIME_FORMAT, crime.getDate()));
+    private void updateDateOnButton(Button button, CharSequence formatterString) {
+        button.setText(DateFormat.format(formatterString, crime.getDate()));
     }
 }
