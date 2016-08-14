@@ -72,7 +72,7 @@ public class CrimeListFragment extends Fragment {
         public void bindCrime(Crime crime) {
             this.crime = crime;
             titleTextView.setText(crime.getTitle());
-            dateTextView.setText(DateFormat.format(CrimeFragment.DATE_FORMAT, crime.getDate()));
+            dateTextView.setText(DateFormat.format(CrimeFragment.DATE_TIME_FORMAT, crime.getDate()));
             solvedCheckBox.setChecked(crime.isSolved());
         }
 

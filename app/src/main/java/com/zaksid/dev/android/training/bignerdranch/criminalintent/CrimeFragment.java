@@ -25,6 +25,7 @@ import java.util.UUID;
  */
 public class CrimeFragment extends Fragment {
 
+    public final static CharSequence DATE_TIME_FORMAT = "EEEE, LLL d, yyyy | h:mm a"; // i.e. Saturday, Jul 23, 2016 | 5.12 AM
     public final static CharSequence DATE_FORMAT = "EEEE, LLL d, yyyy"; // i.e. Saturday, Jul 23, 2016
     public final static CharSequence TIME_FORMAT = "h:mm a"; // i.e. 5.12 AM
 
@@ -97,7 +98,8 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 FragmentManager fragmentManager = getFragmentManager();
-                TimePickerFragment dialog = new TimePickerFragment();
+                TimePickerFragment dialog = TimePickerFragment.newInstance(crime.getDate());
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_TIME);
                 dialog.show(fragmentManager, DIALOG_TIME);
             }
         });
@@ -125,6 +127,12 @@ public class CrimeFragment extends Fragment {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             crime.setDate(date);
             updateDateOnButton();
+        }
+
+        if (requestCode == REQUEST_TIME) {
+            Date date = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
+            crime.setDate(date);
+            updateTimeOnButton();
         }
     }
 
