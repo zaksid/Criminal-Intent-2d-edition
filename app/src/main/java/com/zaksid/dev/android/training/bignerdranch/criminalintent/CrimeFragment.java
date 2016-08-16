@@ -26,9 +26,9 @@ import java.util.UUID;
 public class CrimeFragment extends Fragment {
 
     public final static CharSequence DATE_TIME_FORMAT = "EEEE, LLL d, yyyy | h:mm a"; // i.e. Saturday, Jul 23, 2016 | 5.12 AM
-    public final static CharSequence DATE_FORMAT = "EEEE, LLL d, yyyy"; // i.e. Saturday, Jul 23, 2016
-    public final static CharSequence TIME_FORMAT = "h:mm a"; // i.e. 5.12 AM
 
+    private final static CharSequence DATE_FORMAT = "EEEE, LLL d, yyyy"; // i.e. Saturday, Jul 23, 2016
+    private final static CharSequence TIME_FORMAT = "h:mm a"; // i.e. 5.12 AM
     private final static String ARG_CRIME_ID = "crime_id";
     private final static String DIALOG_DATE = "DialogDate";
     private final static String DIALOG_TIME = "DialogTime";
