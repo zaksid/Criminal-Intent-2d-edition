@@ -24,6 +24,8 @@ import java.util.List;
  * Class that holds list of views of crimes (using RecyclerView)
  */
 public class CrimeListFragment extends Fragment {
+    private final static String SAVED_SUBTITLE_VISIBLE = "subtitle";
+
     private RecyclerView crimeRecyclerView;
     private CrimeAdapter adapter;
     private boolean isSubtitleVisible;
@@ -42,6 +44,10 @@ public class CrimeListFragment extends Fragment {
         crimeRecyclerView = (RecyclerView) view.findViewById(R.id.crime_recycler_view);
         crimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        if (savedInstanceState != null) {
+            isSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
+        }
+
         updateUI();
 
         return view;
@@ -53,11 +59,7 @@ public class CrimeListFragment extends Fragment {
         inflater.inflate(R.menu.fragment_crime_list, menu);
 
         MenuItem subtitleItem = menu.findItem(R.id.menu_item_show_subtitle);
-//        if (isSubtitleVisible){
         subtitleItem.setTitle(isSubtitleVisible ? R.string.hide_subtitle : R.string.show_subtitle);
-//        } else {
-//            subtitleItem.setTitle();
-//        }
     }
 
     @Override
@@ -85,6 +87,12 @@ public class CrimeListFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         adapter.notifyItemChanged(requestCode);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SAVED_SUBTITLE_VISIBLE, isSubtitleVisible);
     }
 
     @Override
