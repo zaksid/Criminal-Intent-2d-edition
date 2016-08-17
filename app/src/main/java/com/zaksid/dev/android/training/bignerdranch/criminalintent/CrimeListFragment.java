@@ -105,7 +105,7 @@ public class CrimeListFragment extends Fragment {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         int crimeCount = crimeLab.getCrimes().size();
         String subtitle = isSubtitleVisible
-            ? getString(R.string.subtitle_format, crimeCount)
+            ? getResources().getQuantityString(R.plurals.subtitle_plural, crimeCount, crimeCount)
             : getString(R.string.app_name);
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();

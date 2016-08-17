@@ -14,5 +14,9 @@
     <string name="new_crime">New Crime</string>
     <string name="show_subtitle">Show number of crimes</string>
     <string name="hide_subtitle">Hide number of crimes</string>
-    <string name="subtitle_format">%1$s crimes</string>
+
+    <plurals name="subtitle_plural">
+        <item quantity="one">%1$s crime</item>
+        <item quantity="other">%1$s crimes</item>
+    </plurals>
 </resources>
