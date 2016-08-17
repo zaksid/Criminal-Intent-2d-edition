@@ -44,4 +44,8 @@ public class CrimeLab {
     public void addCrime(Crime crime) {
         crimes.add(crime);
     }
+
+    public void removeCrime(Crime crime) {
+        crimes.remove(crime);
+    }
 }
