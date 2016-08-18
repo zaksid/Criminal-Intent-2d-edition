@@ -13,6 +13,11 @@
 
     <string name="new_crime">New Crime</string>
     <string name="remove_crime">Remove Crime</string>
+
+    <string name="create_crime">Create crime</string>
+    <string name="no_crimes">There are no crimes yet</string>
+
+
     <string name="show_subtitle">Show number of crimes</string>
     <string name="hide_subtitle">Hide number of crimes</string>
 
