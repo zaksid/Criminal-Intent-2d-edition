@@ -42,7 +42,6 @@ public class CrimeLab {
         values.put(CrimeTable.Cols.SOLVED, crime.isSolved() ? 1 : 0);
 
         return values;
-
     }
 
     public List<Crime> getCrimes() {
@@ -71,6 +70,7 @@ public class CrimeLab {
             }
 
             cursor.moveToFirst();
+
             return cursor.getCrime();
         } finally {
             cursor.close();
@@ -79,17 +79,20 @@ public class CrimeLab {
 
     public void addCrime(Crime crime) {
         ContentValues values = getContentValues(crime);
+
         database.insert(CrimeTable.NAME, null, values);
     }
 
     public void updateCrime(Crime crime) {
         String uuidStr = crime.getId().toString();
         ContentValues values = getContentValues(crime);
+
         database.update(CrimeTable.NAME, values, CrimeTable.Cols.UUID + " = ?", new String[]{uuidStr});
     }
 
     public void removeCrime(Crime crime) {
         String uuidStr = crime.getId().toString();
+        
         database.delete(CrimeTable.NAME, CrimeTable.Cols.UUID + " = ?", new String[]{uuidStr});
     }
 
