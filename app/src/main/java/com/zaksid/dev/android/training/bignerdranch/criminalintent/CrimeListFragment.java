@@ -111,7 +111,7 @@ public class CrimeListFragment extends Fragment {
         updateUI();
     }
 
-    private void createCrime(){
+    private void createCrime() {
         Crime crime = new Crime();
         CrimeLab.get(getActivity()).addCrime(crime);
         Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
@@ -140,6 +140,7 @@ public class CrimeListFragment extends Fragment {
             adapter = new CrimeAdapter(crimes);
             crimeRecyclerView.setAdapter(adapter);
         } else {
+            adapter.setCrimes(crimes);
             adapter.notifyDataSetChanged();
         }
 
@@ -208,6 +209,10 @@ public class CrimeListFragment extends Fragment {
         @Override
         public int getItemCount() {
             return crimes.size();
+        }
+
+        public void setCrimes(List<Crime> crimes) {
+            this.crimes = crimes;
         }
     }
 }
