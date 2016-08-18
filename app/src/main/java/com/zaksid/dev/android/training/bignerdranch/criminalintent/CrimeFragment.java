@@ -129,7 +129,7 @@ public class CrimeFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_item_delete_crime:
+            case R.id.menu_item_remove_crime:
                 CrimeLab.get(getActivity()).removeCrime(crime);
                 getActivity().finish();
                 return true;
