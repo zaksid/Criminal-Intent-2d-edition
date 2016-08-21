@@ -12,16 +12,16 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="FlatButtonTheme" parent="@style/Widget.AppCompat.Button.Borderless">
+    <style name="AppTheme.FlatButton" parent="@style/Widget.AppCompat.Button.Borderless">
         <item name="android:textColor">@color/colorSecondaryText</item>
     </style>
 
-    <style name="RaisedButtonTheme" parent="@style/Widget.AppCompat.Button.Colored">
+    <style name="AppTheme.RaisedButton" parent="@style/Widget.AppCompat.Button.Colored">
         <item name="android:textColor">@color/colorPrimaryTextWhite</item>
-        <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:layout_marginRight">16dp</item>
         <item name="android:height">36dp</item>
         <item name="android:minWidth">88dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
     </style>
 
 </resources>
