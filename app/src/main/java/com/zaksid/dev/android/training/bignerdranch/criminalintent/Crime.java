@@ -11,6 +11,7 @@ import java.util.UUID;
  *     <li>title - name of crime</li>
  *     <li>date - when crime happened</li>
  *     <li>isSolved - is crime solved or not</li>
+ *     <li>suspect - name of suspect in crime person (to be chosen from Contacts)</li>
  * </ul>
  *
  */
@@ -19,6 +20,7 @@ public class Crime {
     private String title;
     private Date date;
     private boolean isSolved;
+    private String suspect;
 
     public Crime() {
         this(UUID.randomUUID());
@@ -55,5 +57,13 @@ public class Crime {
 
     public void setSolved(boolean solved) {
         isSolved = solved;
+    }
+
+    public String getSuspect() {
+        return suspect;
+    }
+
+    public void setSuspect(String suspect) {
+        this.suspect = suspect;
     }
 }

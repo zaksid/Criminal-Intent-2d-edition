@@ -42,6 +42,7 @@ public class CrimeFragment extends Fragment {
     private EditText titleField;
     private Button dateButton;
     private Button timeButton;
+    private Button reportButton;
     private CheckBox isSolvedCheckbox;
 
     public static CrimeFragment newInstance(UUID crimeId) {
@@ -70,7 +71,7 @@ public class CrimeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_crime, container, false);
 
         titleField = (EditText) view.findViewById(R.id.crime_title);
@@ -124,6 +125,20 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+        reportButton = (Button) view.findViewById(R.id.crime_report);
+        reportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
+                intent.putExtra(Intent.EXTRA_SUBJECT, R.string.crime_report_subject);
+                // Force a chooser to be shown every time an implicit intent is used to start an activity
+                intent = Intent.createChooser(intent, getString(R.string.send_report));
+                startActivity(intent);
+            }
+        });
+
         return view;
     }
 
@@ -167,5 +182,20 @@ public class CrimeFragment extends Fragment {
 
     private void updateDateOnButton(Button button, CharSequence formatterString) {
         button.setText(DateFormat.format(formatterString, crime.getDate()));
+    }
+
+    private String getCrimeReport() {
+        String solvedString = getString(crime.isSolved()
+            ? R.string.crime_report_solved
+            : R.string.crime_report_unsolved);
+
+        String dateString = DateFormat.format(DATE_FORMAT, crime.getDate()).toString();
+
+        String suspectString = crime.getSuspect();
+        suspectString = (suspectString == null)
+            ? getString(R.string.crime_report_no_suspect)
+            : getString(R.string.crime_report_suspect, suspectString);
+
+        return getString(R.string.crime_report, crime.getTitle(), dateString, solvedString, suspectString);
     }
 }
