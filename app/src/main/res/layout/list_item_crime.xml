@@ -10,12 +10,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/activity_horizontal_margin_small"
         android:padding="4dp" />
 
     <TextView
         android:id="@+id/list_item_crime_title_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
         android:layout_toLeftOf="@id/list_item_crime_solved_check_box"
         android:padding="4dp"
         android:textStyle="bold" />
@@ -25,6 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/list_item_crime_title_text_view"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
         android:layout_toLeftOf="@id/list_item_crime_solved_check_box"
         android:padding="4dp" />
 

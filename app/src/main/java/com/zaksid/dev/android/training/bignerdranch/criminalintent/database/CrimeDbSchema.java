@@ -7,11 +7,12 @@ public class CrimeDbSchema {
     public final static class CrimeTable {
         public final static String NAME = "crimes";
 
-        public static final class Cols {
-            public static final String UUID = "uuid";
-            public static final String TITLE = "title";
-            public static final String DATE = "date";
-            public static final String SOLVED = "solved";
+        public final static class Cols {
+            public final static String UUID = "uuid";
+            public final static String TITLE = "title";
+            public final static String DATE = "date";
+            public final static String SOLVED = "solved";
+            public final static String SUSPECT = "suspect";
         }
     }
 }
