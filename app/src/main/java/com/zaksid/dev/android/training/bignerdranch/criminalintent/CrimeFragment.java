@@ -389,9 +389,8 @@ public class CrimeFragment extends Fragment {
                         break;
 
                     case Phone.TYPE_WORK:
-                        if (!mobileDefined) {
+                        if (!mobileDefined)
                             crime.setSuspectPhoneNumber(phoneNumber);
-                        }
 
                         break;
                 }
