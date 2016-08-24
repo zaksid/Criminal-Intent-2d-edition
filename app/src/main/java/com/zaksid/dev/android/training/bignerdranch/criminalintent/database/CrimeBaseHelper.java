@@ -16,7 +16,7 @@ import com.zaksid.dev.android.training.bignerdranch.criminalintent.database.Crim
  * </ul>
  */
 public class CrimeBaseHelper extends SQLiteOpenHelper {
-    private static final int VERSION = 1;
+    private static final int VERSION = 3;
     private static final String DATABASE_NAME = "crimeBase.db";
 
     public CrimeBaseHelper(Context context) {
@@ -31,12 +31,19 @@ public class CrimeBaseHelper extends SQLiteOpenHelper {
             CrimeTable.Cols.TITLE + ", " +
             CrimeTable.Cols.DATE + ", " +
             CrimeTable.Cols.SOLVED + ", " +
-            CrimeTable.Cols.SUSPECT +
+            CrimeTable.Cols.SUSPECT + ", " +
+            CrimeTable.Cols.SUSPECT_PHONE +
             ")"
         );
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+    public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
+        if (newVersion > oldVersion) {
+            if (newVersion == 3) { // Add suspect phone
+                database.execSQL("alter table " + CrimeTable.NAME
+                    + " add column " + CrimeTable.Cols.SUSPECT_PHONE + " " + "string");
+            }
+        }
     }
 }
