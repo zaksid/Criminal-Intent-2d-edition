@@ -35,4 +35,9 @@
     <string name="crime_report_subject">CriminalIntent Crime Report</string>
     <string name="send_report">Send crime report via</string>
     <string name="suspect_on_button">Suspect: </string>
+    <string name="call_suspect">Call suspect</string>
+
+    <string name="contacts_access_denied">Access to Contacts denied</string>
+    <string name="contacts_access_explanation">Grant app access to your Contacts to be able to set suspect in
+        crime</string>
 </resources>

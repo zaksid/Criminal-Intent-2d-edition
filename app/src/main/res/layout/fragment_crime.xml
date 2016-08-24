@@ -59,15 +59,30 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:text="@string/crime_solved_label" />
 
-    <Button
-        android:id="@+id/crime_suspect"
-        style="@style/AppTheme.RaisedButton"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
-        android:layout_marginRight="@dimen/activity_horizontal_margin_small"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/crime_suspect_text" />
+        android:layout_marginRight="@dimen/activity_horizontal_margin_small"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/crime_suspect"
+            style="@style/AppTheme.RaisedButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin_small"
+            android:layout_weight="1"
+            android:text="@string/crime_suspect_text" />
+
+        <ImageButton
+            android:id="@+id/crime_call_suspect"
+            style="@style/AppTheme.RaisedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/call_suspect"
+            android:src="@drawable/ic_action_call" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/crime_report"

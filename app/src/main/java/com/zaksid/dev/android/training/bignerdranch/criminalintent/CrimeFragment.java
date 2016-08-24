@@ -1,15 +1,22 @@
 package com.zaksid.dev.android.training.bignerdranch.criminalintent;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -23,6 +30,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.util.Date;
 import java.util.UUID;
@@ -40,9 +49,12 @@ public class CrimeFragment extends Fragment {
     private final static String ARG_CRIME_ID = "crime_id";
     private final static String DIALOG_DATE = "DialogDate";
     private final static String DIALOG_TIME = "DialogTime";
-    private final static int REQUEST_DATE = 0;
-    private final static int REQUEST_TIME = 1;
-    private final static int REQUEST_CONTACT = 2;
+    private final static int REQUEST_DATE = 100;
+    private final static int REQUEST_TIME = 101;
+    private final static int REQUEST_CONTACT = 102;
+    private final static int PERMISSIONS_REQUEST_READ_CONTACTS = 200;
+
+    private Intent pickContact;
 
     private Crime crime;
     private EditText titleField;
@@ -50,6 +62,7 @@ public class CrimeFragment extends Fragment {
     private Button timeButton;
     private Button reportButton;
     private Button suspectButton;
+    private ImageButton callSuspectButton;
     private CheckBox isSolvedCheckbox;
 
     public static CrimeFragment newInstance(UUID crimeId) {
@@ -147,18 +160,68 @@ public class CrimeFragment extends Fragment {
             }
         });
 
-        final Intent pickContact = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        pickContact = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+
+        callSuspectButton = (ImageButton) view.findViewById(R.id.crime_call_suspect);
+        callSuspectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + crime.getSuspectPhoneNumber()));
+                startActivity(intent);
+            }
+        });
 
         suspectButton = (Button) view.findViewById(R.id.crime_suspect);
         suspectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(pickContact, REQUEST_CONTACT);
+                int hasReadContactPermission = ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.READ_CONTACTS);
+
+                if (hasReadContactPermission != PackageManager.PERMISSION_GRANTED) {
+                    // No permission granted
+
+                    // Should we show an explanation?
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                        Manifest.permission.READ_CONTACTS)) {
+
+                        // Show an explanation to the user *asynchronously* -- don't block
+                        // this thread waiting for the user's response! After the user
+                        // sees the explanation, try again to request the permission.
+
+                        new AlertDialog.Builder(getActivity())
+                            .setMessage(getString(R.string.contacts_access_explanation))
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
+                                        PERMISSIONS_REQUEST_READ_CONTACTS);
+                                }
+                            })
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .create()
+                            .show();
+                    } else {
+
+                        // No explanation needed, we can request the permission.
+
+                        ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.READ_CONTACTS},
+                            PERMISSIONS_REQUEST_READ_CONTACTS);
+                    }
+                } else {
+                    startActivityForResult(pickContact, REQUEST_CONTACT);
+                }
+
             }
         });
 
         if (crime.getSuspect() != null) {
             suspectButton.setText(String.format("%s %s", getString(R.string.suspect_on_button), crime.getSuspect()));
+            callSuspectButton.setVisibility(View.VISIBLE);
+            callSuspectButton.setEnabled(crime.getSuspectPhoneNumber() != null);
+        } else {
+            callSuspectButton.setVisibility(View.GONE);
         }
 
         PackageManager packageManager = getActivity().getPackageManager();
@@ -208,26 +271,25 @@ public class CrimeFragment extends Fragment {
         }
 
         if (requestCode == REQUEST_CONTACT && data != null) {
-            Uri contactUri = data.getData();
-            String[] queryFields = new String[]{
-                ContactsContract.Contacts.DISPLAY_NAME
-            };
+            getContactFromDB(data);
+        }
+    }
 
-            Cursor cursor = getActivity().getContentResolver()
-                .query(contactUri, queryFields, null, null, null);
-
-            assert cursor != null;
-            try {
-                if (cursor.getCount() == 0) {
-                    return;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_READ_CONTACTS:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startActivityForResult(pickContact, REQUEST_CONTACT);
+                } else {
+                    // permission denied, boo! Disable the functionality that depends on this permission.
+                    Toast.makeText(getActivity(), getString(R.string.contacts_access_denied), Toast.LENGTH_SHORT)
+                        .show();
                 }
-                cursor.moveToFirst();
-                String suspect = cursor.getString(0);
-                crime.setSuspect(suspect);
-                suspectButton.setText(String.format("%s %s", getString(R.string.suspect_on_button), suspect));
-            } finally {
-                cursor.close();
-            }
+                break;
+
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -248,5 +310,98 @@ public class CrimeFragment extends Fragment {
             : getString(R.string.crime_report_suspect, suspectString);
 
         return getString(R.string.crime_report, crime.getTitle(), dateString, solvedString, suspectString);
+    }
+
+    private void getContactFromDB(Intent data) {
+        final Uri CONTACT_URI = data.getData();
+        final String[] PROJECTION = new String[]{
+            ContactsContract.Contacts._ID,
+            ContactsContract.Contacts.DISPLAY_NAME,
+            ContactsContract.Contacts.HAS_PHONE_NUMBER
+        };
+        final String SELECTION = null;
+        final String[] SELECTION_ARGS = null;
+        final String SORT_ORDER = null;
+
+        Cursor cursor = getActivity().getContentResolver()
+            .query(CONTACT_URI, PROJECTION, SELECTION, SELECTION_ARGS, SORT_ORDER);
+
+        assert cursor != null;
+
+        String contactId;
+        String hasPhone;
+
+        try {
+            if (cursor.getCount() == 0) {
+                return;
+            }
+
+            cursor.moveToFirst();
+
+            String suspectName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+            contactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+            hasPhone = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+
+            crime.setSuspect(suspectName);
+            crime.setSuspectPhoneNumber(null);
+
+            suspectButton.setText(String.format("%s %s", getString(R.string.suspect_on_button), suspectName));
+        } finally {
+            cursor.close();
+        }
+
+        if (crime.getSuspect() != null || hasPhone.equalsIgnoreCase("1")) {
+            getContactPhoneNumberFromDB(contactId);
+        }
+    }
+
+    private void getContactPhoneNumberFromDB(String contactId) {
+        final Uri COMMON_DATA_KIND_PHONE_URI = Phone.CONTENT_URI;
+        final String[] PROJECTION = new String[]{
+            Phone.NUMBER,
+            Phone.TYPE
+        };
+        final String SELECTION = Phone.CONTACT_ID + " = ?";
+        final String[] SELECTION_ARGS = new String[]{contactId};
+        final String SORT_ORDER = null;
+
+        Cursor cursor = getActivity().getContentResolver()
+            .query(COMMON_DATA_KIND_PHONE_URI, PROJECTION, SELECTION, SELECTION_ARGS, SORT_ORDER);
+
+        assert cursor != null;
+
+        try {
+            if (cursor.getCount() == 0) {
+                return;
+            }
+
+            boolean mobileDefined = false;
+
+            while (cursor.moveToNext()) {
+                String phoneNumber = cursor.getString(cursor.getColumnIndex(Phone.NUMBER));
+                int type = cursor.getInt(cursor.getColumnIndex(Phone.TYPE));
+
+                switch (type) {
+                    case Phone.TYPE_MOBILE:
+                        crime.setSuspectPhoneNumber(phoneNumber);
+                        mobileDefined = true;
+
+                        break;
+
+                    case Phone.TYPE_WORK:
+                        if (!mobileDefined) {
+                            crime.setSuspectPhoneNumber(phoneNumber);
+                        }
+
+                        break;
+                }
+
+                callSuspectButton.setVisibility(View.VISIBLE);
+                callSuspectButton.setEnabled(crime.getSuspectPhoneNumber() != null);
+            }
+
+        } finally {
+            cursor.close();
+        }
     }
 }
