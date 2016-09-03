@@ -6,10 +6,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -31,8 +33,10 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.Date;
 import java.util.UUID;
 
@@ -52,8 +56,10 @@ public class CrimeFragment extends Fragment {
     private final static int REQUEST_DATE = 100;
     private final static int REQUEST_TIME = 101;
     private final static int REQUEST_CONTACT = 102;
+    private final static int REQUEST_PHOTO = 103;
     private final static int PERMISSIONS_REQUEST_READ_CONTACTS = 200;
 
+    private File photoFile;
     private Intent pickContact;
 
     private Crime crime;
@@ -63,6 +69,8 @@ public class CrimeFragment extends Fragment {
     private Button reportButton;
     private Button suspectButton;
     private ImageButton callSuspectButton;
+    private ImageButton photoButton;
+    private ImageView photoView;
     private CheckBox isSolvedCheckbox;
 
     public static CrimeFragment newInstance(UUID crimeId) {
@@ -81,6 +89,7 @@ public class CrimeFragment extends Fragment {
         setHasOptionsMenu(true);
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         crime = CrimeLab.get(getActivity()).getCrime(crimeId);
+        photoFile = CrimeLab.get(getActivity()).getPhotoFIle(crime);
     }
 
     @Override
@@ -134,7 +143,6 @@ public class CrimeFragment extends Fragment {
                 dialog.show(fragmentManager, DIALOG_TIME);
             }
         });
-
 
         isSolvedCheckbox = (CheckBox) view.findViewById(R.id.crime_solved);
         isSolvedCheckbox.setChecked(crime.isSolved());
@@ -230,6 +238,28 @@ public class CrimeFragment extends Fragment {
             suspectButton.setEnabled(false);
         }
 
+        photoButton = (ImageButton) view.findViewById(R.id.crime_camera);
+
+        final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        boolean canTakePhoto = photoFile != null &&
+            captureImage.resolveActivity(packageManager) != null;
+        photoButton.setEnabled(canTakePhoto);
+
+        if (canTakePhoto) {
+            Uri uri = Uri.fromFile(photoFile);
+            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        }
+
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(captureImage, REQUEST_PHOTO);
+            }
+        });
+
+        photoView = (ImageView) view.findViewById(R.id.crime_photo);
+        updatePhotoView();
+
         return view;
     }
 
@@ -258,20 +288,28 @@ public class CrimeFragment extends Fragment {
             return;
         }
 
-        if (requestCode == REQUEST_DATE) {
-            Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
-            crime.setDate(date);
-            updateDateOnButton(dateButton, DATE_FORMAT);
-        }
+        switch (requestCode) {
+            case REQUEST_DATE:
+                Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+                crime.setDate(date);
+                updateDateOnButton(dateButton, DATE_FORMAT);
+                break;
 
-        if (requestCode == REQUEST_TIME) {
-            Date date = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
-            crime.setDate(date);
-            updateDateOnButton(timeButton, TIME_FORMAT);
-        }
+            case REQUEST_TIME:
+                Date dateTime = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
+                crime.setDate(dateTime);
+                updateDateOnButton(timeButton, TIME_FORMAT);
+                break;
 
-        if (requestCode == REQUEST_CONTACT && data != null) {
-            getContactFromDB(data);
+            case REQUEST_CONTACT:
+                if (data != null) {
+                    getContactFromDB(data);
+                }
+                break;
+
+            case REQUEST_PHOTO:
+                updatePhotoView();
+                break;
         }
     }
 
@@ -295,6 +333,15 @@ public class CrimeFragment extends Fragment {
 
     private void updateDateOnButton(Button button, CharSequence formatterString) {
         button.setText(DateFormat.format(formatterString, crime.getDate()));
+    }
+
+    private void updatePhotoView() {
+        if (photoFile == null || !photoFile.exists()) {
+            photoView.setImageDrawable(null);
+        } else {
+            Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), getActivity());
+            photoView.setImageBitmap(bitmap);
+        }
     }
 
     private String getCrimeReport() {
