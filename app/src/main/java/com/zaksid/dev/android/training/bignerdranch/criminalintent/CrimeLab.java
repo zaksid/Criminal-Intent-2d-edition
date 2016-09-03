@@ -3,11 +3,13 @@ package com.zaksid.dev.android.training.bignerdranch.criminalintent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 
 import com.zaksid.dev.android.training.bignerdranch.criminalintent.database.CrimeBaseHelper;
 import com.zaksid.dev.android.training.bignerdranch.criminalintent.database.CrimeCursorWrapper;
 import com.zaksid.dev.android.training.bignerdranch.criminalintent.database.CrimeDbSchema.CrimeTable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -94,8 +96,13 @@ public class CrimeLab {
 
     public void removeCrime(Crime crime) {
         String uuidStr = crime.getId().toString();
-        
+
         database.delete(CrimeTable.NAME, CrimeTable.Cols.UUID + " = ?", new String[]{uuidStr});
+    }
+
+    public File getPhotoFIle(Crime crime) {
+        File externalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return externalFilesDir == null ? null : new File(externalFilesDir, crime.getPhotoFileName());
     }
 
     private CrimeCursorWrapper queryCrimes(String whereClause, String[] whereArgs) {

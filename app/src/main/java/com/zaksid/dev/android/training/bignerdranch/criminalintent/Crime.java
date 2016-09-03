@@ -76,4 +76,8 @@ public class Crime {
     public void setSuspectPhoneNumber(String suspectPhone) {
         this.suspectPhoneNumber = suspectPhone;
     }
+
+    public String getPhotoFileName() {
+        return String.format("IMG_%s.jpg", getId().toString());
+    }
 }
