@@ -40,4 +40,7 @@
     <string name="contacts_access_denied">Access to Contacts denied</string>
     <string name="contacts_access_explanation">Grant app access to your Contacts to be able to set suspect in
         crime</string>
+
+    <string name="zoomed_photo">Zoomed photo of crime</string>
+    <string name="no_photo">There is no photo for the crime</string>
 </resources>
