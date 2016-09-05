@@ -30,6 +30,7 @@ public class PictureUtils {
         return BitmapFactory.decodeFile(path, options);
     }
 
+    /* conservative scale method */
     public static Bitmap getScaledBitmap(String path, Activity activity) {
         Point size = new Point();
         activity.getWindowManager().getDefaultDisplay().getSize(size);
