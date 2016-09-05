@@ -1,6 +1,7 @@
 package com.zaksid.dev.android.training.bignerdranch.criminalintent;
 
 import android.app.Dialog;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -31,11 +32,15 @@ public class ZoomedPhotoFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         File photoFile = (File) getArguments().getSerializable(ARG_PHOTO);
+        assert photoFile != null;
 
         final View view = LayoutInflater.from(getActivity()).inflate(R.layout.photo_dialog_fragment, null);
 
+        final Point photoViewSize = new Point();
+        getActivity().getWindowManager().getDefaultDisplay().getSize(photoViewSize);
+
         final ImageView imageView = (ImageView) view.findViewById(R.id.zoomed_photo_view);
-        imageView.setImageBitmap(PictureUtils.getScaledBitmap(photoFile.getPath(), getActivity()));
+        imageView.setImageBitmap(PictureUtils.getScaledBitmap(photoFile.getPath(), photoViewSize));
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
