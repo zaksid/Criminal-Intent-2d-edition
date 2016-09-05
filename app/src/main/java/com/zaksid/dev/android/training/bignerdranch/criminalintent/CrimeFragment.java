@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -28,6 +29,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -62,6 +64,7 @@ public class CrimeFragment extends Fragment {
 
     private File photoFile;
     private Intent pickContact;
+    private Point photoViewSize;
 
     private Crime crime;
     private EditText titleField;
@@ -259,7 +262,6 @@ public class CrimeFragment extends Fragment {
         });
 
         photoView = (ImageView) view.findViewById(R.id.crime_photo);
-        updatePhotoView();
         photoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -272,6 +274,17 @@ public class CrimeFragment extends Fragment {
                 FragmentManager fragmentManager = getFragmentManager();
                 ZoomedPhotoFragment dialog = ZoomedPhotoFragment.newInstance(photoFile);
                 dialog.show(fragmentManager, DIALOG_ZOOMED_PHOTO);
+            }
+        });
+
+        final ViewTreeObserver treeObserver = photoView.getViewTreeObserver();
+        treeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                photoViewSize = new Point();
+                photoViewSize.set(photoView.getWidth(), photoView.getHeight());
+                updatePhotoView();
+                photoView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
 
@@ -323,7 +336,9 @@ public class CrimeFragment extends Fragment {
                 break;
 
             case REQUEST_PHOTO:
-                updatePhotoView();
+                if (photoViewSize != null) {
+                    updatePhotoView();
+                }
                 break;
         }
     }
@@ -354,7 +369,7 @@ public class CrimeFragment extends Fragment {
         if (photoFile == null || !photoFile.exists()) {
             photoView.setImageDrawable(null);
         } else {
-            Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), getActivity());
+            Bitmap bitmap = PictureUtils.getScaledBitmap(photoFile.getPath(), photoViewSize);
             photoView.setImageBitmap(bitmap);
         }
     }
